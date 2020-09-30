@@ -60,15 +60,10 @@ def loadData(analyzer, accidentsfile):
     accidentsfile = cf.data_dir + accidentsfile
     input_file = csv.DictReader(open(accidentsfile, encoding="utf-8"),
                                 delimiter=",")
-    i = 0
-    p = 0
+
     for accident in input_file:
         model.addaccident(analyzer, accident)
-        if i%29743 == 0:
-            print (" " + str(p) + "%" + " completado", end="\r")
-            p+=1
-
-        i+=1
+ 
     return analyzer
 
 # ___________________________________________________
