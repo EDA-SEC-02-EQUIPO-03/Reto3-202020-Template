@@ -40,10 +40,12 @@ recae sobre el controlador.
 
 def init():
     """
-    Llama la funcion de inicializacion del modelo.
+    Llama la funcion de inicializacion  del modelo.
     """
+    # catalog es utilizado para interactuar con el modelo
+    analyzer = model.newAnalyzer()
+    return analyzer
 
-    return None
 
 
 # ___________________________________________________
@@ -55,9 +57,25 @@ def loadData(analyzer, accidentsfile):
     """
     Carga los datos de los archivos CSV en el modelo
     """
-    
+    accidentsfile = cf.data_dir + accidentsfile
+    input_file = csv.DictReader(open(accidentsfile, encoding="utf-8"),
+                                delimiter=",")
+    i = 0
+    p = 0
+    for accident in input_file:
+        model.addaccident(analyzer, accident)
+        if i%29743 == 0:
+            print (" " + str(p) + "%" + " completado", end="\r")
+            p+=1
+
+        i+=1
     return analyzer
 
 # ___________________________________________________
 #  Funciones para consultas
 # ___________________________________________________
+
+def getAccident(tree, key):
+    return model.getaccident(tree, key)
+def keyset (map):
+    return model.keyset(map)

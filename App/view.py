@@ -25,6 +25,7 @@ import config
 from DISClib.ADT import list as lt
 from App import controller
 assert config
+import time 
 
 """
 La vista se encarga de la interacción con el usuario.
@@ -38,9 +39,9 @@ operación seleccionada.
 # ___________________________________________________
 
 
-crimefile = 'crime-utf8.csv'
+accidentsfile = 'us_accidents_small.csv'
 
-# ___________________________________________________
+# _________________________________________________us_accidents_small.csv__
 #  Menu principal
 # ___________________________________________________
 
@@ -70,10 +71,22 @@ while True:
         cont = controller.init()
 
     elif int(inputs[0]) == 2:
+        t1=time.process_time()
         print("\nCargando información de crimenes ....")
+        controller.loadData(cont, accidentsfile)
+        # print('Crimenes cargados: ' + str(controller.crimesSize(cont)))
+        # print('Altura del arbol: ' + str(controller.indexHeight(cont)))
+        # print('Elementos en el arbol: ' + str(controller.indexSize(cont)))
+        # print('Menor Llave: ' + str(controller.minKey(cont)))
+        # print('Mayor Llave: ' + str(controller.maxKey(cont)))
+        t2=time.process_time()
+        print(t2-t1)
 
     elif int(inputs[0]) == 3:
-        print("\nBuscando crimenes en un rango de fechas: ")
+        date = input('Por favor ingrese la fecha de la cuál desea buscar los accidentes: (YYYY-MM-DD)\n')
+        print("\\nRequerimiento No 1 del reto 3: ")
+        accidents_in_date = controller.getAccident(cont['dateIndex'],date)
+        print(accidents_in_date)
 
 
     elif int(inputs[0]) == 4:
