@@ -72,7 +72,7 @@ while True:
 
     elif int(inputs[0]) == 2:
         t1=time.process_time()
-        print("\nCargando información de crimenes ....")
+        print("\nCargando información de accidentes ....")
         controller.loadData(cont, accidentsfile)
         print('Crimenes cargados: ' + str(controller.crimesSize(cont)))
         print('Altura del arbol: ' + str(controller.indexHeight(cont)))
@@ -84,9 +84,9 @@ while True:
 
     elif int(inputs[0]) == 3:
         date = input('Por favor ingrese la fecha de la cuál desea buscar los accidentes: (YYYY-MM-DD)\n')
-        print("\\nRequerimiento No 1 del reto 3: ")
-        accidents_in_date = controller.getAccident(cont['dateIndex'],date)
-        print(accidents_in_date)
+        print("\nRequerimiento No 1 del reto 3: ")
+        accidents_in_date = lt.size(controller.getAccident(cont['dateIndex'],date))
+        print("la cantidad de accidentes el ",date,"son ",accidents_in_date)
 
 
     elif int(inputs[0]) == 4:
