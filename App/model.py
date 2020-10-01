@@ -146,6 +146,100 @@ def getaccident(tree,key):
 # Funciones de Comparacion
 # ==============================
 def compareIds(id1, id2):
+   
+    if (id1 == id2):
+        return 0
+    elif id1 > id2:
+        return 1
+    else:
+        return -1
+
+
+def compareDates(date1, date2):
+    """
+    Compara dos ids de libros, id es un identificador
+    y entry una pareja llave-valor
+    """
+    if (date1 == date2):
+        return 0
+    elif (date1 > date2):
+        return 1
+    else:
+        return -1
+
+
+def compareOffenses(offense1, offense2):
+    """
+    Compara dos ids de libros, id es un identificador
+    y entry una pareja llave-valor
+    """
+    offense = me.getKey(offense2)
+    if (offense1 == offense):
+        return 0
+    elif (offense1 > offense):
+        return 1
+    else:
+        return -1
+
+def crimesSize(analyzer):
+    """
+    Número de libros en el catago
+    """
+    return lt.size(analyzer['accidents'])
+
+
+def indexHeight(analyzer):
+    """Numero de autores leido
+    """
+    return om.height(analyzer['dateIndex'])
+
+
+def indexSize(analyzer):
+    """Numero de autores leido
+    """
+    return om.size(analyzer['dateIndex'])
+
+
+def minKey(analyzer):
+    """Numero de autores leido
+    """
+    return om.minKey(analyzer['dateIndex'])
+
+
+def maxKey(analyzer):
+    """Numero de autores leido
+    """
+    return om.maxKey(analyzer['dateIndex'])
+
+
+def getCrimesByRange(analyzer, initialDate, finalDate):
+    """
+    Retorna el numero de crimenes en un rago de fechas.
+    """
+    lst = om.values(analyzer['dateIndex'], initialDate, finalDate)
+    return lst
+
+
+def getCrimesByRangeCode(analyzer, initialDate, offensecode):
+    """
+    Para una fecha determinada, retorna el numero de crimenes
+    de un tipo especifico.
+    """
+    crimedate = om.get(analyzer['dateIndex'], initialDate)
+    if crimedate['key'] is not None:
+        offensemap = me.getValue(crimedate)['offenseIndex']
+        numoffenses = m.get(offensemap, offensecode)
+        if numoffenses is not None:
+            return m.size(me.getValue(numoffenses)['lstoffenses'])
+        return 0
+
+
+# ==============================
+# Funciones de Comparacion
+# ==============================
+
+
+def compareIds(id1, id2):
     """
     Compara dos crimenes
     """
