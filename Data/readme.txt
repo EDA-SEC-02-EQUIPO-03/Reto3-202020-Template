@@ -1,1 +1,2 @@
-Utilizar los archivos de datos que se encuentran en Sicuaplus
+Daniel Alejandro Parra Lara 201821667 da.parral
+Melissa Contreras Rojas 202011876 m.contrerasr
