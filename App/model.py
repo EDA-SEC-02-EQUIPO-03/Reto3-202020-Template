@@ -233,46 +233,39 @@ def getCrimesByRangeCode(analyzer, initialDate, offensecode):
             return m.size(me.getValue(numoffenses)['lstoffenses'])
         return 0
 
+def getStateMoreAccidentsByRange(analyzer,initialDate, finalDate):
+    Estados={}
+    info=om.values(analyzer['dateIndex'],initialDate,finalDate)
+    for j in range(1,lt.size(info)+1):
+            it1=lt.getElement(info,j)
+            for i in range(1,lt.size(it1)+1):
+                it2=lt.getElement(it1,i)
+                estado=it2['State']
+                if estado in Estados:
+                    Estados[estado]+=1
+                else:
+                    Estados[estado]=1
+    big=0
+    for k in Estados.keys():
+        value=Estados[k]
+        if value>big:
+            big=value
+            res=k
+    return res 
 
-# ==============================
-# Funciones de Comparacion
-# ==============================
+    return res 
 
+def getDateMoreAccidentsByRange(analyzer,initialDate, finalDate):
+    keys=om.keys(analyzer['dateIndex'],initialDate, finalDate)
+    value=""
+    if not lt.isEmpty(keys):
+        big=0
+        for i in range(1,lt.size(keys)+1):
+            key=lt.getElement(keys, i)
+            accidentdate=getaccident(analyzer['dateIndex'],key)
+            size=lt.size(accidentdate)
+            if size>big:
+                big=size
+                value=key
+    return value
 
-def compareIds(id1, id2):
-    """
-    Compara dos crimenes
-    """
-    if (id1 == id2):
-        return 0
-    elif id1 > id2:
-        return 1
-    else:
-        return -1
-
-
-def compareDates(date1, date2):
-    """
-    Compara dos ids de libros, id es un identificador
-    y entry una pareja llave-valor
-    """
-    if (date1 == date2):
-        return 0
-    elif (date1 > date2):
-        return 1
-    else:
-        return -1
-
-
-def compareOffenses(offense1, offense2):
-    """
-    Compara dos ids de libros, id es un identificador
-    y entry una pareja llave-valor
-    """
-    offense = me.getKey(offense2)
-    if (offense1 == offense):
-        return 0
-    elif (offense1 > offense):
-        return 1
-    else:
-        return -1

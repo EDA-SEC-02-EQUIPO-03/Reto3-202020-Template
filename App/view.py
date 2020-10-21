@@ -39,7 +39,7 @@ operación seleccionada.
 # ___________________________________________________
 
 
-accidentsfile = 'us_accidents_small.csv'
+accidentsfile = 'us_accidents_dis_2016.csv'
 
 # _________________________________________________us_accidents_small.csv__
 #  Menu principal
@@ -53,7 +53,7 @@ def printMenu():
     print("1- Inicializar Analizador")
     print("2- Cargar información de accidentes")
     print("3- Requerimento 1")
-    print("4- Requerimento 2")
+    print("4- Requerimento 4")
     print("0- Salir")
     print("*******************************************")
 
@@ -90,7 +90,16 @@ while True:
 
 
     elif int(inputs[0]) == 4:
-        print("\nRequerimiento No 1 del reto 3: ")
+        t1=time.process_time()
+        print("\nRequerimiento No 4 del reto 3: ")
+        datelo = input('Por favor ingrese la fecha inicial desde la cuál desea buscar los accidentes: (YYYY-MM-DD)\n')
+        datehi = input('Por favor ingrese la fecha final desde  la cuál desea buscar los accidentes: (YYYY-MM-DD)\n')
+        mas_accidentes_fecha= controller.getDateMoreAccidentsByRange(cont,datelo,datehi)
+        mas_accidentes_estado=controller.getStateMoreAccidentsByRange(cont,datelo,datehi)
+        print( "El estado con mas accidentes entre ",datelo," y ",datehi," es: ",mas_accidentes_estado)
+        print("La fecha con mas accidentes entre ",datelo," y ",datehi," es: ",mas_accidentes_fecha)
+        t2=time.process_time()
+        print(t2-t1)
 
     else:
         sys.exit(0)
