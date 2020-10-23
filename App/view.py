@@ -23,6 +23,7 @@
 import sys
 import config
 from DISClib.ADT import list as lt
+from DISClib.ADT import map as m 
 from App import controller
 assert config
 import time 
@@ -39,9 +40,9 @@ operación seleccionada.
 # ___________________________________________________
 
 
-accidentsfile = 'us_accidents_small.csv'
+accidentsfile = 'us_accidents_dis_2018.csv'
 
-# _________________________________________________us_accidents_small.csv__
+# _________________________________________________
 #  Menu principal
 # ___________________________________________________
 
@@ -52,8 +53,9 @@ def printMenu():
     print("Bienvenido")
     print("1- Inicializar Analizador")
     print("2- Cargar información de accidentes")
-    print("3- Requerimento 1")
-    print("4- Requerimento 2")
+    print("3- Requerimiento 1")
+    print("4- Requerimiento 3")
+    print('6- Requerimiento 5')
     print("0- Salir")
     print("*******************************************")
 
@@ -87,11 +89,27 @@ while True:
         print("\nRequerimiento No 1 del reto 3: ")
         accidents_in_date = lt.size(controller.getAccident(cont['dateIndex'],date))
         print("la cantidad de accidentes el ",date,"son ",accidents_in_date)
+        print("\\nRequerimiento No 1 del reto 3: ")
+        
 
 
     elif int(inputs[0]) == 4:
-        print("\nRequerimiento No 1 del reto 3: ")
-
+        date1=input('Por favor ingrese la fecha inicial (YYYY-MM-DD)\n')
+        date2=input('Por favor ingrese la fecha final (YYYY-MM-DD)\n')
+        getaccidentsbyrange=controller.getAccidentbyrange(cont,date1,date2)
+        print('la severidad de accidentes más común en estas fechas es de ',getaccidentsbyrange[2], "durante estas fechas ocurrieron",getaccidentsbyrange[1],"accidentes")
+        print("\nRequerimiento No 3 del reto 3: ")
+        
+    elif int(inputs[0])==6:
+        
+        hour1=input('Por favor ingrese la hora inicial de busqueda intervalos de 30 min(hh:mm)\n')
+        hour2=input('Por favor ingrese la hora final de busqueda (hh:mm)\n')
+        
+        result=controller.getaccidentbyhourrange(cont,hour1,hour2)
+        
+        print(lt.getElement(result[0],1))
+        print("Para las horas seleccionadas hay ",lt.getElement(result[0],1) ,"accidentes de severidad 1,", lt.getElement(result[0],2)," de severidad 2,",lt.getElement(result[0],3)," de severidad 3,",lt.getElement(result[0],4), " de severidad  4")
+        print("estos accidentes representan el ",round(result[1]/lt.size(cont['accidents'])*100,2),"porciento de todos los accidentes reportados") 
     else:
         sys.exit(0)
 sys.exit(0)

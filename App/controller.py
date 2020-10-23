@@ -69,9 +69,16 @@ def loadData(analyzer, accidentsfile):
 # ___________________________________________________
 #  Funciones para consultas
 # ___________________________________________________
-
+def size(analizer):
+    return model.size(analizer)
 def getAccident(tree, key):
     return model.getaccident(tree, key)
+
+def getAccidentbyrange(tree,minkey,maxkey):
+    return model.getaccidentrange(tree,minkey,maxkey)
+
+def getaccidentbyhourrange (tree,minkey,maxkey):
+    return model.getaccidenthourrange(tree,minkey,maxkey)
 def keyset (map):
     return model.keyset(map)
 
