@@ -27,6 +27,8 @@ from DISClib.ADT import map as m
 
 import datetime
 assert config
+import calendar
+import math
 
 """
 En este archivo definimos los TADs que vamos a usar,
@@ -57,6 +59,8 @@ def newAnalyzer():
     analyzer['dateIndex'] = om.newMap(omaptype='RBT',
                                       comparefunction=compareDates)
     analyzer['hourIndex'] = om.newMap(omaptype='RBT',comparefunction=compareHour)
+    analyzer['Geographic'] = om.newMap(omaptype='BST',
+                                      comparefunction=compareGeo)
     return analyzer
 
 # Funciones para agregar informacion al catalogo
@@ -67,12 +71,12 @@ def addaccident(analyzer, accidents):
     lt.addLast(analyzer['accidents'], accidents)
     updateDateIndex(analyzer['dateIndex'], accidents)
     updateHourIndex(analyzer['hourIndex'],accidents)
+    updateGeographic(analyzer['Geographic'], accidents)
     return analyzer
 
 def updateDateIndex(map, accident):
     
     accidentdate = accident['Start_Time'][:10]
-    
     entry = om.get(map, accidentdate)
     if entry == None:
         lst=lt.newList()
@@ -104,6 +108,28 @@ def updateHourIndex(map,accident):
     om.put(map, time, lst)
     return map
 
+    
+def updateGeographic(map, accident):
+    """
+    Se toma la fecha del crimen y se busca si ya existe en el arbol
+    dicha fecha.  Si es asi, se adiciona a su lista de crimenes
+    y se actualiza el indice de tipos de crimenes.
+
+    Si no se encuentra creado un nodo para esa fecha en el arbol
+    se crea y se actualiza el indice de tipos de crimenes
+    """
+    Lat = accident['Start_Lat']
+    Long= accident['Start_Lng']
+    key=(Long,Lat)
+    entry = om.get(map, key)
+    if entry == None:
+        lst=lt.newList()
+    else:
+        lst=me.getValue(entry)
+    lt.addLast(lst,accident)
+    
+    om.put(map, key, lst)
+    return map
 
 
 
@@ -116,6 +142,7 @@ def keyset(map):
 
 def getaccident(tree,key):
     return me.getValue(om.get(tree,key))
+
 
 def getaccidentrange(analyzer,minkey,maxkey):
     accidentsdate=analyzer['dateIndex']
@@ -168,6 +195,102 @@ def getaccidenthourrange (analyzer,minkey,maxkey):
    
     return categoria,cantidad
 
+def getStateMoreAccidentsByRange(analyzer,initialDate, finalDate):
+    Estados={}
+    info=om.values(analyzer['dateIndex'],initialDate,finalDate)
+    for j in range(1,lt.size(info)+1):
+            it1=lt.getElement(info,j)
+            for i in range(1,lt.size(it1)+1):
+                it2=lt.getElement(it1,i)
+                estado=it2['State']
+                if estado in Estados:
+                    Estados[estado]+=1
+                else:
+                    Estados[estado]=1
+    big=0
+    for k in Estados.keys():
+        value=Estados[k]
+        if value>big:
+            big=value
+            res=k
+    return res 
+
+
+def getDateMoreAccidentsByRange(analyzer,initialDate, finalDate):
+    keys=om.keys(analyzer['dateIndex'],initialDate, finalDate)
+    value=""
+    if not lt.isEmpty(keys):
+        big=0
+        for i in range(1,lt.size(keys)+1):
+            key=lt.getElement(keys, i)
+            accidentdate=getaccident(analyzer['dateIndex'],key)
+            size=lt.size(accidentdate)
+            if size>big:
+                big=size
+                value=key
+    return value
+
+
+def dayOfTheWeek(date): #"YYYY-MM-DD"
+    year=date[:4]
+    month=date[5:7]
+    day=date[8:10]
+    theDate=day+" "+month+" "+year
+    born = datetime.datetime.strptime(theDate, '%d %m %Y').weekday() 
+    n=(calendar.day_name[born]) 
+    if n.lower()=="monday":
+        day="Lunes"
+    elif n.lower()=="tuesday":
+        day="Martes"
+    elif n.lower()=="wednesday":
+        day="Miércoles"
+    elif n.lower()=="thursday":
+        day="Jueves"
+    elif n.lower()=="friday":
+        day="Viernes"
+    elif n.lower()=="saturday":
+        day="Sábado"
+    elif n.lower()=="sunday":
+        day="Domingo"
+    else:
+        day="Fecha incorrecta"
+    return day
+
+
+def getDistanceBetweenCenterAndPoint(LatC,LongC,LatP,LongP):
+    degree_to_mile=24901.92/360
+    NewLatC=LatC*degree_to_mile
+    NewLongC=LongC*degree_to_mile
+    NewLatP=float(LatP)*degree_to_mile
+    NewLongP=float(LongP)*degree_to_mile
+    a=(NewLongP-NewLongC)**2
+    b=(NewLatP-NewLatC)**2
+    c=a+b
+    distance=math.sqrt(c)
+    return distance
+
+
+
+def getAccidentsGeographicalArea (analyzer,LatC,LongC,radio):
+    dayAccidents={}
+    info=om.valueSet(analyzer['Geographic'])
+    for j in range(1,lt.size(info)+1):
+            it1=lt.getElement(info,j)
+            for i in range(1,lt.size(it1)+1):
+                it2=lt.getElement(it1,i)
+                Lat=it2['Start_Lat']
+                Long=it2['Start_Lng']
+                date=it2['Start_Time'][:10]
+                distance=getDistanceBetweenCenterAndPoint(LatC,LongC,Lat,Long)
+                if distance<=radio:
+                    day=dayOfTheWeek(date)
+                    if day in dayAccidents:
+                            dayAccidents[day]+=1
+                    else:
+                            dayAccidents[day]=1
+    return dayAccidents
+
+
 
 
 
@@ -186,6 +309,13 @@ def compareIds(id1, id2):
     else:
         return -1
 
+def compareGeo(geo1,geo2):
+    if geo1[0]==geo2[0] and geo1[1]==geo2[1]:
+        return 0
+    elif geo1[0]>geo2[0] or geo1[1]>geo2[1]:
+        return 1
+    else:
+        return -1
 
 def compareDates(date1, date2):
     """
@@ -199,24 +329,17 @@ def compareDates(date1, date2):
     else:
         return -1
 
-
-def compareOffenses(offense1, offense2):
-    """
-    Compara dos ids de libros, id es un identificador
-    y entry una pareja llave-valor
-    """
-    offense = me.getKey(offense2)
-    if (offense1 == offense):
+def compareHour(hour1,hour2):
+    if (hour1 == hour2):
         return 0
-    elif (offense1 > offense):
+    elif (hour1 > hour2):
         return 1
     else:
         return -1
 
-def crimesSize(analyzer):
-    """
-    Número de libros en el catago
-    """
+
+def size(analyzer):
+
     return lt.size(analyzer['accidents'])
 
 
@@ -244,25 +367,6 @@ def maxKey(analyzer):
     return om.maxKey(analyzer['dateIndex'])
 
 
-def getCrimesByRange(analyzer, initialDate, finalDate):
-    """
-    Retorna el numero de crimenes en un rago de fechas.
-    """
-    lst = om.values(analyzer['dateIndex'], initialDate, finalDate)
-    return lst
 
-
-def getCrimesByRangeCode(analyzer, initialDate, offensecode):
-    """
-    Para una fecha determinada, retorna el numero de crimenes
-    de un tipo especifico.
-    """
-    crimedate = om.get(analyzer['dateIndex'], initialDate)
-    if crimedate['key'] is not None:
-        offensemap = me.getValue(crimedate)['offenseIndex']
-        numoffenses = m.get(offensemap, offensecode)
-        if numoffenses is not None:
-            return m.size(me.getValue(numoffenses)['lstoffenses'])
-        return 0
 
 

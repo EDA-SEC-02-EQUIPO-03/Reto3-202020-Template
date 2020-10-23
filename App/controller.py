@@ -69,24 +69,35 @@ def loadData(analyzer, accidentsfile):
 # ___________________________________________________
 #  Funciones para consultas
 # ___________________________________________________
-def size(analizer):
-    return model.size(analizer)
+def size(analyzer):
+    return model.size(analyzer)
+
+
 def getAccident(tree, key):
     return model.getaccident(tree, key)
 
 def getAccidentbyrange(tree,minkey,maxkey):
     return model.getaccidentrange(tree,minkey,maxkey)
 
+
 def getaccidentbyhourrange (tree,minkey,maxkey):
     return model.getaccidenthourrange(tree,minkey,maxkey)
+
+
+def getStateMoreAccidentsByRange(analyzer,initialDate, finalDate):
+    return model.getStateMoreAccidentsByRange(analyzer,initialDate, finalDate)   
+
+
+def getDateMoreAccidentsByRange(analyzer,initialDate, finalDate):
+    return model.getDateMoreAccidentsByRange(analyzer,initialDate, finalDate)
+
+
+def getAccidentsGeographicalArea (analyzer,LatC,LongC,radio):
+    return model.getAccidentsGeographicalArea (analyzer,LatC,LongC,radio)
+
+
 def keyset (map):
     return model.keyset(map)
-
-def crimesSize(analyzer):
-    """
-    Numero de crimenes leidos
-    """
-    return model.crimesSize(analyzer)
 
 
 def indexHeight(analyzer):
@@ -117,22 +128,4 @@ def maxKey(analyzer):
     return model.maxKey(analyzer)
 
 
-def getCrimesByRange(analyzer, initialDate, finalDate):
-    """
-    Retorna el total de crimenes en un rango de fechas
-    """
-    initialDate = datetime.datetime.strptime(initialDate, '%Y-%m-%d')
-    finalDate = datetime.datetime.strptime(finalDate, '%Y-%m-%d')
-    return model.getCrimesByRange(analyzer, initialDate.date(),
-                                  finalDate.date())
 
-
-def getCrimesByRangeCode(analyzer, initialDate,
-                         offensecode):
-    """
-    Retorna el total de crimenes de un tipo especifico en una
-    fecha determinada
-    """
-    initialDate = datetime.datetime.strptime(initialDate, '%Y-%m-%d')
-    return model.getCrimesByRangeCode(analyzer, initialDate.date(),
-                                      offensecode)
