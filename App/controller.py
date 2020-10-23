@@ -135,3 +135,6 @@ def getStateMoreAccidentsByRange(analyzer,initialDate, finalDate):
 
 def getDateMoreAccidentsByRange(analyzer,initialDate, finalDate):
     return model.getDateMoreAccidentsByRange(analyzer,initialDate, finalDate)
+
+def getAccidentsGeographicalArea (analyzer,LatC,LongC,radio):
+    return model.getAccidentsGeographicalArea (analyzer,LatC,LongC,radio)

@@ -108,11 +108,11 @@ while True:
         LongC=float(input("Por favor ingrese la longitud central (grados decimales) desde la que quiere poner su punto de busqueda: \n"))
         radio= float(input("Por favor ingrese el radio hasta el cual desea obtener los accidentes: \n"))
         accidentes_en_zona_geografica=controller.getAccidentsGeographicalArea(cont,LatC,LongC,radio)
-        print(accidentes_en_zona_geografica)
-
-
+        for h in accidentes_en_zona_geografica.keys():
+            valor=accidentes_en_zona_geografica[h]
+            print(str(h)+" -> "+ str(valor) )
         t2=time.process_time()
-
+        print(t2-t1)
     else:
         sys.exit(0)
 sys.exit(0)

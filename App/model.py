@@ -26,6 +26,8 @@ from DISClib.DataStructures import mapentry as me
 from DISClib.ADT import map as m
 import datetime
 assert config
+import calendar
+import math
 
 """
 En este archivo definimos los TADs que vamos a usar,
@@ -54,6 +56,8 @@ def newAnalyzer():
     analyzer['accidents'] = lt.newList('SINGLE_LINKED', compareIds)
     analyzer['dateIndex'] = om.newMap(omaptype='BST',
                                       comparefunction=compareDates)
+    analyzer['Geographic'] = om.newMap(omaptype='BST',
+                                      comparefunction=compareGeo)
     return analyzer
 
 # Funciones para agregar informacion al catalogo
@@ -64,6 +68,7 @@ def addaccident(analyzer, accidents):
     lt.addLast(analyzer['accidents'], accidents)
     #lt.addFirst(analyzer['accidents'], accidents)
     updateDateIndex(analyzer['dateIndex'], accidents)
+    updateGeographic(analyzer['Geographic'], accidents)
     return analyzer
 
 def updateDateIndex(map, accident):
@@ -76,7 +81,6 @@ def updateDateIndex(map, accident):
     se crea y se actualiza el indice de tipos de crimenes
     """
     accidentdate = accident['Start_Time'][:10]
-    
     entry = om.get(map, accidentdate)
     if entry == None:
         lst=lt.newList()
@@ -86,6 +90,31 @@ def updateDateIndex(map, accident):
     #lt.addFirst(lst,accident)
 
     om.put(map, accidentdate, lst)
+    
+    #addDateIndex(datentry, accident)
+    return map
+
+def updateGeographic(map, accident):
+    """
+    Se toma la fecha del crimen y se busca si ya existe en el arbol
+    dicha fecha.  Si es asi, se adiciona a su lista de crimenes
+    y se actualiza el indice de tipos de crimenes.
+
+    Si no se encuentra creado un nodo para esa fecha en el arbol
+    se crea y se actualiza el indice de tipos de crimenes
+    """
+    Lat = accident['Start_Lat']
+    Long= accident['Start_Lng']
+    key=(Long,Lat)
+    entry = om.get(map, key)
+    if entry == None:
+        lst=lt.newList()
+    else:
+        lst=me.getValue(entry)
+    lt.addLast(lst,accident)
+    #lt.addFirst(lst,accident)
+    
+    om.put(map, key, lst)
     
     #addDateIndex(datentry, accident)
     return map
@@ -154,6 +183,13 @@ def compareIds(id1, id2):
     else:
         return -1
 
+def compareGeo(geo1,geo2):
+    if geo1[0]==geo2[0] and geo1[1]==geo2[1]:
+        return 0
+    elif geo1[0]>geo2[0] or geo1[1]>geo2[1]:
+        return 1
+    else:
+        return -1
 
 def compareDates(date1, date2):
     """
@@ -253,8 +289,6 @@ def getStateMoreAccidentsByRange(analyzer,initialDate, finalDate):
             res=k
     return res 
 
-    return res 
-
 def getDateMoreAccidentsByRange(analyzer,initialDate, finalDate):
     keys=om.keys(analyzer['dateIndex'],initialDate, finalDate)
     value=""
@@ -268,4 +302,72 @@ def getDateMoreAccidentsByRange(analyzer,initialDate, finalDate):
                 big=size
                 value=key
     return value
+
+def dayOfTheWeek(date): #"YYYY-MM-DD"
+    year=date[:4]
+    month=date[5:7]
+    day=date[8:10]
+    theDate=day+" "+month+" "+year
+    born = datetime.datetime.strptime(theDate, '%d %m %Y').weekday() 
+    n=(calendar.day_name[born]) 
+    if n.lower()=="monday":
+        day="Lunes"
+    elif n.lower()=="tuesday":
+        day="Martes"
+    elif n.lower()=="wednesday":
+        day="Miércoles"
+    elif n.lower()=="thursday":
+        day="Jueves"
+    elif n.lower()=="friday":
+        day="Viernes"
+    elif n.lower()=="saturday":
+        day="Sábado"
+    elif n.lower()=="sunday":
+        day="Domingo"
+    else:
+        day="Fecha incorrecta"
+    return day
+
+
+def getDistanceBetweenCenterAndPoint(LatC,LongC,LatP,LongP):
+    degree_to_mile=24901.92/360
+    NewLatC=LatC*degree_to_mile
+    NewLongC=LongC*degree_to_mile
+    NewLatP=float(LatP)*degree_to_mile
+    NewLongP=float(LongP)*degree_to_mile
+    a=(NewLongP-NewLongC)**2
+    b=(NewLatP-NewLatC)**2
+    c=a+b
+    distance=math.sqrt(c)
+    return distance
+
+
+#def getDateofLatLong(lst):
+    #for g in range(1,lt.size(lst)+1):
+                        #accidents_geo1=lt.getElement(lst,g)
+                        #for p in range(1,lt.size(accidents_geo1)+1):
+                            #accidents_geo2=lt.getElement(accidents_geo1,p)
+                            #date=accidents_geo2['Start_Time'][:10]
+    #return date
+
+
+def getAccidentsGeographicalArea (analyzer,LatC,LongC,radio):
+    dayAccidents={}
+    info=om.valueSet(analyzer['Geographic'])
+    for j in range(1,lt.size(info)+1):
+            it1=lt.getElement(info,j)
+            for i in range(1,lt.size(it1)+1):
+                it2=lt.getElement(it1,i)
+                Lat=it2['Start_Lat']
+                Long=it2['Start_Lng']
+                date=it2['Start_Time'][:10]
+                distance=getDistanceBetweenCenterAndPoint(LatC,LongC,Lat,Long)
+                if distance<=radio:
+                    day=dayOfTheWeek(date)
+                    if day in dayAccidents:
+                            dayAccidents[day]+=1
+                    else:
+                            dayAccidents[day]=1
+    return dayAccidents
+
 
