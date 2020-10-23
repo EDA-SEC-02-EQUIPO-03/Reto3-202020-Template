@@ -54,6 +54,7 @@ def printMenu():
     print("2- Cargar información de accidentes")
     print("3- Requerimento 1")
     print("4- Requerimento 4")
+    print("5- Requerimento 6")
     print("0- Salir")
     print("*******************************************")
 
@@ -100,6 +101,17 @@ while True:
         print("La fecha con mas accidentes entre ",datelo," y ",datehi," es: ",mas_accidentes_fecha)
         t2=time.process_time()
         print(t2-t1)
+    elif int(inputs[0]) == 5:
+        t1=time.process_time()
+        print("\nRequerimiento No 6 del reto 3: ")
+        LatC=float(input("Por favor ingrese la latitud central  (grados decimales) desde la que quiere poner su punto de busqueda: \n"))
+        LongC=float(input("Por favor ingrese la longitud central (grados decimales) desde la que quiere poner su punto de busqueda: \n"))
+        radio= float(input("Por favor ingrese el radio hasta el cual desea obtener los accidentes: \n"))
+        accidentes_en_zona_geografica=controller.getAccidentsGeographicalArea(cont,LatC,LongC,radio)
+        print(accidentes_en_zona_geografica)
+
+
+        t2=time.process_time()
 
     else:
         sys.exit(0)
