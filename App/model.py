@@ -65,7 +65,6 @@ def addaccident(analyzer, accidents):
     """
     """
     lt.addLast(analyzer['accidents'], accidents)
-    #lt.addFirst(analyzer['accidents'], accidents)
     updateDateIndex(analyzer['dateIndex'], accidents)
     updateHourIndex(analyzer['hourIndex'],accidents)
     return analyzer
@@ -80,11 +79,9 @@ def updateDateIndex(map, accident):
     else:
         lst=me.getValue(entry)
     lt.addLast(lst,accident)
-    #lt.addFirst(lst,accident)
 
     om.put(map, accidentdate, lst)
     
-    #addDateIndex(datentry, accident)
     return map
 
 def updateHourIndex(map,accident):
@@ -150,10 +147,7 @@ def getaccidenthourrange (analyzer,minkey,maxkey):
     accidentshour=analyzer['hourIndex']
     mintime = (60*int(minkey[0:2]))+int(minkey[3:5])
     maxtime = (60*int(maxkey[0:2]))+int(maxkey[3:5])
-    #print(mintime,maxtime)
-    #prueba
-    #print(om.get(accidentshour,720))
-    
+
     hours= om.values(accidentshour,mintime,maxtime)
     
     categoria=lt.newList()
@@ -272,50 +266,3 @@ def getCrimesByRangeCode(analyzer, initialDate, offensecode):
         return 0
 
 
-# ==============================
-# Funciones de Comparacion
-# ==============================
-
-
-def compareIds(id1, id2):
-    """
-    Compara dos crimenes
-    """
-    if (id1 == id2):
-        return 0
-    
-
-
-def compareDates(date1, date2):
-    """
-    Compara dos ids de libros, id es un identificador
-    y entry una pareja llave-valor
-    """
-    if (date1 == date2):
-        return 0
-    elif (date1 > date2):
-        return 1
-    else:
-        return -1
-def compareHour(hour1,hour2):
-    if (hour1 == hour2):
-        return 0
-    elif (hour1 > hour2):
-        return 1
-    else:
-        return -1
-
-def compareOffenses(offense1, offense2):
-    """
-    Compara dos ids de libros, id es un identificador
-    y entry una pareja llave-valor
-    """
-    offense = me.getKey(offense2)
-    if (offense1 == offense):
-        return 0
-    elif (offense1 > offense):
-        return 1
-    else:
-        return -1
-def size(analyzer):
-    return om.size(analyzer)
