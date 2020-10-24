@@ -59,8 +59,7 @@ def newAnalyzer():
     analyzer['dateIndex'] = om.newMap(omaptype='RBT',
                                       comparefunction=compareDates)
     analyzer['hourIndex'] = om.newMap(omaptype='RBT',comparefunction=compareHour)
-    analyzer['Geographic'] = om.newMap(omaptype='BST',
-                                      comparefunction=compareGeo)
+
     return analyzer
 
 # Funciones para agregar informacion al catalogo
@@ -71,7 +70,6 @@ def addaccident(analyzer, accidents):
     lt.addLast(analyzer['accidents'], accidents)
     updateDateIndex(analyzer['dateIndex'], accidents)
     updateHourIndex(analyzer['hourIndex'],accidents)
-    updateGeographic(analyzer['Geographic'], accidents)
     return analyzer
 
 def updateDateIndex(map, accident):
@@ -108,28 +106,6 @@ def updateHourIndex(map,accident):
     om.put(map, time, lst)
     return map
 
-    
-def updateGeographic(map, accident):
-    """
-    Se toma la fecha del crimen y se busca si ya existe en el arbol
-    dicha fecha.  Si es asi, se adiciona a su lista de crimenes
-    y se actualiza el indice de tipos de crimenes.
-
-    Si no se encuentra creado un nodo para esa fecha en el arbol
-    se crea y se actualiza el indice de tipos de crimenes
-    """
-    Lat = accident['Start_Lat']
-    Long= accident['Start_Lng']
-    key=(Long,Lat)
-    entry = om.get(map, key)
-    if entry == None:
-        lst=lt.newList()
-    else:
-        lst=me.getValue(entry)
-    lt.addLast(lst,accident)
-    
-    om.put(map, key, lst)
-    return map
 
 
 
@@ -273,7 +249,7 @@ def getDistanceBetweenCenterAndPoint(LatC,LongC,LatP,LongP):
 
 def getAccidentsGeographicalArea (analyzer,LatC,LongC,radio):
     dayAccidents={}
-    info=om.valueSet(analyzer['Geographic'])
+    info=om.valueSet(analyzer['dateIndex'])
     for j in range(1,lt.size(info)+1):
             it1=lt.getElement(info,j)
             for i in range(1,lt.size(it1)+1):
@@ -318,10 +294,7 @@ def compareGeo(geo1,geo2):
         return -1
 
 def compareDates(date1, date2):
-    """
-    Compara dos ids de libros, id es un identificador
-    y entry una pareja llave-valor
-    """
+
     if (date1 == date2):
         return 0
     elif (date1 > date2):
@@ -344,26 +317,22 @@ def size(analyzer):
 
 
 def indexHeight(analyzer):
-    """Numero de autores leido
-    """
+
     return om.height(analyzer['dateIndex'])
 
 
 def indexSize(analyzer):
-    """Numero de autores leido
-    """
+
     return om.size(analyzer['dateIndex'])
 
 
 def minKey(analyzer):
-    """Numero de autores leido
-    """
+
     return om.minKey(analyzer['dateIndex'])
 
 
 def maxKey(analyzer):
-    """Numero de autores leido
-    """
+
     return om.maxKey(analyzer['dateIndex'])
 
 

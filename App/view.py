@@ -40,8 +40,9 @@ operación seleccionada.
 # ___________________________________________________
 
 
-accidentsfile = 'us_accidents_dis_2016.csv'
-
+accidentsfile = 'US_Accidents_Dec19.csv'
+#'us_accidents_dis_2016.csv'
+#'US_Accidents_Dec19.csv'
 # _________________________________________________
 #  Menu principal
 # ___________________________________________________
